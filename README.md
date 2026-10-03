@@ -122,11 +122,18 @@ A linguagem padrão é Python; troque com `language=` (qualquer linguagem do pac
 
 | Comando | Gera |
 |---|---|
-| `\cite{silva2024}` | (SILVA, 2024) |
+| `\cite{silva2024}` | (Silva, 2024) |
+| `\cite[p.~10]{silva2024}` | (Silva, 2024, p. 10) |
 | `\citeonline{silva2024}` | Silva (2024) |
-| `\apud{silva2024}{souza2020}` | (SILVA, 2024 apud SOUZA, 2020) |
+| `\apud{silva2024}{souza2020}` | (Silva, 2024 apud Souza, 2020) |
+| dois autores: `\cite{...}` / `\citeonline{...}` | (Clarac; Bonnin, 1985) / Clarac e Bonnin (1985) |
+| três autores | (Costa; Mendes; Andrade, 2017) / Costa, Mendes e Andrade (2017) |
+| quatro ou mais autores | (Souza *et al.*, 2020) / Souza *et al.* (2020) |
+| várias obras: `\cite{costa2017,souza2020}` | (Costa; Mendes; Andrade, 2017; Souza *et al.*, 2020) |
 
-Cadastre as obras em `Referencias.bib`. A lista de referências só inclui as obras citadas.
+As citações seguem a NBR 10520:2023: nome do autor em caixa alta e baixa também dentro dos parênteses (§6.1.1.1), autores separados por ponto e vírgula entre parênteses e *et al.* em itálico a partir de quatro autores (§6.1.2). Na lista de referências, o sobrenome continua em maiúsculas ("SILVA, J.") e constam todos os autores, como manda a NBR 6023.
+
+Cadastre as obras em `Referencias.bib`. A lista de referências só inclui as obras citadas. **Não remova** a entrada `vipee-abnt-options` no topo do arquivo: ela não é uma referência, é o que ativa o formato de citação de 2023.
 
 ### Pendências
 

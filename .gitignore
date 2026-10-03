@@ -333,3 +333,6 @@ TSWLatexianTemp*
 ## Logos do projeto: versionar PDFs, mas não os convertidos pela compilação
 !Logos/*.pdf
 Logos/*-converted-to.*
+
+## Lista de Quadros (tipo quadro definido no arquivo principal)
+*.loquadro

@@ -17,6 +17,11 @@
 % Citações e referências (ABNT)
 %----------------------------------------
 \usepackage[alf, bibjustif, abnt-etal-list=0, abnt-etal-text=emph]{abntex2cite}
+% NBR 10520:2023: autor em caixa alta e baixa nas citações, "(Silva, 2024)".
+% A opção de pacote abnt-cite-style=AuthorYEAR não funciona (chave duplicada
+% no abntex2-options.bib); por isso a opção vem de uma entrada própria em
+% Referencias.bib (vipee-abnt-options).
+\AtBeginDocument{\citeoption{vipee-abnt-options}}
 
 %----------------------------------------
 % Pacotes adicionais
@@ -141,6 +146,9 @@
 
 \pagestyle{empty}
 \import{}{2_Resumo}
+
+\listofquadros
+\clearpage
 
 \tableofcontents
 \clearpage
