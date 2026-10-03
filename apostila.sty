@@ -1,0 +1,820 @@
+% cspell: disable
+% --- Início do arquivo apostila.sty (versão com nova arquitetura de rodapé) ---
+\NeedsTeXFormat{LaTeX2e}[1994/06/01]
+\ProvidesPackage{apostila}[2025/07/30]
+\PackageInfo{apostila}{Carregando estilo personalizado para apostilas}
+
+% -- Indentação automática ou nunca indentada ---
+\newif\if@apostila@neverindent\@apostila@neverindentfalse
+\DeclareOption{neverindent}{\@neverindenttrue}
+
+% --- Lógica para família de fontes ---
+\newif\if@apostila@roman
+\DeclareOption{roman}{\@apostila@romantrue}
+\DeclareOption{sans}{\@apostila@romanfalse}
+
+\DeclareOption*{%
+    \PassOptionsToPackage{\CurrentOption}{babel}
+}
+
+\ExecuteOptions{sans}
+\ProcessOptions\relax
+\RequirePackage{babel}
+\RequirePackage[hidelinks]{hyperref}
+\RequirePackage{fancyhdr}
+\RequirePackage{ifthen}
+\RequirePackage{tocloft}
+\RequirePackage{etoc}
+\RequirePackage{varwidth}
+\RequirePackage{geometry}
+\geometry{%
+    a4paper,
+    top=3.5cm,
+    bottom=2cm,
+    left=3cm,
+    right=2cm,
+    headheight=15pt}
+\RequirePackage{textcomp}
+\RequirePackage[type={CC}, modifier={by-nc-nd}, version={4.0}]{doclicense}
+\RequirePackage{tikz}
+\usetikzlibrary{matrix, positioning, calc}
+\RequirePackage{titlesec}
+\RequirePackage{lastpage}
+\RequirePackage{background}
+\RequirePackage[most]{tcolorbox}
+\RequirePackage{caption}
+\RequirePackage{booktabs}
+\RequirePackage{longtable}
+% Numeracao sequencial de figuras: remover prefixo de capitulo
+% (se presente em documentos individuais, esta configuração centraliza o comportamento)
+\RequirePackage{chngcntr}
+\counterwithout{figure}{chapter}
+\RequirePackage{iftex} % Pacote para detectar o motor (pdf, xe, lua)
+\RequirePackage{xparse}
+\RequirePackage{setspace}
+\RequirePackage{xstring}
+\RequirePackage{environ}
+
+% Carregamento condicional do Font Awesome para ícones
+% Tenta fontawesome5, depois fontawesome (v4). Se nenhum disponível, define \alerticon via TikZ.
+\IfFileExists{fontawesome5.sty}{%
+    \PackageInfo{apostila}{fontawesome5 encontrado: usando \string\faIcon{exclamation-triangle}}%
+    \RequirePackage{fontawesome5}%
+    % usa interface fontawesome5 (\faIcon{<name>}) para ícones
+    \newcommand{\alerticon}{\faIcon{exclamation-triangle}}%
+}{%
+    \IfFileExists{fontawesome.sty}{%
+        \PackageInfo{apostila}{fontawesome (v4) encontrado: usando \string\faExclamationTriangle}%
+        \RequirePackage{fontawesome}%
+        \newcommand{\alerticon}{\faExclamationTriangle}%
+    }{%
+        % fallback: pequeno ícone desenhado com TikZ
+        \PackageInfo{apostila}{Nenhum pacote FontAwesome encontrado: usando ícone TikZ como fallback}%
+        \newcommand{\alerticon}{% 
+            \tikz[baseline=-0.6ex]{\node[draw=secondaryColor!55,fill=secondaryColor!70,rounded corners=1pt,inner sep=1pt]{\textcolor{black}{\small\textbf{!}}};}%
+        }%
+    }}%
+
+% Verifica se está compilando com XeTeX ou LuaTeX.
+% --- Lógica Condicional de Fonte ---
+\ifLuaTeX
+    % --- Bloco para LuaLaTeX ---
+    \PackageInfo{apostila}{Motor LuaTeX detectado. Usando fontspec.}
+    \RequirePackage{fontspec}
+
+    % 1. Define as famílias de fontes principais — usar Heuristica como padrão
+    \setmainfont{Heuristica}[
+        Path=./Fontes/,
+        Extension=.otf,
+        UprightFont=*-Regular,
+        BoldFont=*-Bold,
+        ItalicFont=*-Italic
+    ]
+    % 2. Define a família de fontes para sans-serif
+    \setsansfont{GoogleSans}[
+        Path=./Fontes/,
+        Extension=.ttf,
+        UprightFont=*-Regular,
+        BoldFont=*-Bold,
+        ItalicFont=*-Italic
+    ]
+    % 3. Define a família de fontes para monoespaçado
+    \setmonofont{SourceCodePro}[
+        Path      = ./Fontes/,
+        Extension = .ttf,
+        UprightFont = *-Regular,
+        BoldFont    = *-Bold,
+        ItalicFont  = *-Italic
+    ]
+
+    % 4. Usa a opção do pacote para definir a família PADRÃO
+    \if@apostila@roman
+        \renewcommand{\familydefault}{\rmdefault}
+    \else
+        \renewcommand{\familydefault}{\sfdefault}
+    \fi
+
+    % 5. Define as fontes para elementos especiais
+    \newfontfamily\titulocapitulo{Cinzel}[
+        Path        = ./Fontes/,
+        Extension   = .ttf,
+        UprightFont = *-Regular,
+        BoldFont    = *-Bold
+    ]
+    \newfontfamily\numerocapitulo{Cinzel-Bold.ttf}[Path=./Fontes/]
+    \newfontfamily\lettrinefont{EBGaramond-Regular.ttf}[Path=./Fontes/]
+\else
+    \ifXeTeX
+        % --- Bloco para XeLaTeX (mesma lógica do LuaLaTeX) ---
+        \PackageInfo{apostila}{Motor XeTeX detectado. Usando fontspec.}
+        \RequirePackage{fontspec}
+        % Usar Heuristica como padrão de forma estável
+        \setmainfont{Heuristica}[
+            Path=./Fontes/,
+            Extension=.otf,
+            UprightFont=*-Regular,
+            BoldFont=*-Bold,
+            ItalicFont=*-Italic
+        ]
+        \setsansfont{SourceSans3}[
+            Path=./Fontes/,
+            Extension=.otf,
+            UprightFont=*-Regular,
+            BoldFont=*-Bold,
+            ItalicFont=*-Italic
+        ]
+        \setmonofont{SourceCodePro}[
+            Path      = ./Fontes/,
+            Extension = .ttf,
+            UprightFont = *-Regular,
+            BoldFont    = *-Bold,
+            ItalicFont  = *-Italic
+        ]
+        \if@apostila@roman
+            \renewcommand{\familydefault}{\rmdefault}
+        \else
+            \renewcommand{\familydefault}{\sfdefault}
+        \fi
+
+        \newfontfamily\titulocapitulo{Cinzel}[
+            Path        = ./Fontes/,
+            Extension   = .ttf,
+            UprightFont = *-Regular,
+            BoldFont    = *-Bold
+        ]
+        \newfontfamily\numerocapitulo{Cinzel-Bold.ttf}[Path=./Fontes/]
+        \newfontfamily\lettrinefont{EBGaramond-Regular.ttf}[Path=./Fontes/]
+    \else
+        % --- Bloco para pdfLaTeX (fallback) ---
+        \PackageInfo{apostila}{Motor pdfLaTeX detectado. Usando pacotes legados.}
+        \RequirePackage[T1]{fontenc}
+
+        \if@apostila@roman
+            % Usar o pacote 'libertinus' no fallback pdfLaTeX
+            \RequirePackage{libertinus}
+        \else
+            \RequirePackage{sourcesanspro}
+        \fi
+        \RequirePackage{inconsolata}
+        \RequirePackage{ebgaramond}
+
+        \newcommand{\titulocapitulo}{\rmfamily\selectfont}
+        \newcommand{\numerocapitulo}{\bfseries\rmfamily\selectfont}
+        \newcommand{\lettrinefont}{\fontfamily{EBGaramond-LF}\selectfont}
+    \fi
+\fi % Fim da lógica condicional
+
+% Comando para a fonte do número do capítulo (agora definido apenas uma vez)
+\newcommand*\chapternumberfont{\numerocapitulo\fontsize{1.2in}{1.2in}\selectfont}
+\newcommand*\chaptertitlenamefont{\titulocapitulo\fontsize{.8in}{.8in}\selectfont}
+% Comando para a fonte do lettrine
+
+% --- LÓGICA DE INDENTAÇÃO RESTAURADA ---
+\newlength{\pardefault}\setlength{\pardefault}{\parindent}
+\newcommand{\neverindent}{\setlength{\parindent}{0pt}}
+\newcommand{\autoindent}{\setlength{\parindent}{\pardefault}}
+% Aplica \neverindent se a opção de pacote foi usada
+\if@apostila@neverindent
+    \neverindent
+\fi
+
+% --- Início do pacote apostila.sty ---
+
+\definecolor{primaryColor}{RGB}{0,58,112}
+\definecolor{secondaryColor}{RGB}{162,170,173}
+\definecolor{accentColor}{RGB}{218,41,28}
+\definecolor{secondaryAccentColor}{RGB}{0,119,200}
+\definecolor{lightTextColor}{RGB}{236,237,239}
+\definecolor{darkTextColor}{RGB}{19,19,19}
+
+% --- Nível de profundidade do sumário ---
+\setcounter{tocdepth}{3}
+
+% --- Comandos para metadados do documento ---
+\newcommand{\@institute}{}
+\newcommand{\institute}[1]{\renewcommand{\@institute}{#1}}
+\newcommand{\@subtitle}{}
+\newcommand{\subtitle}[1]{\renewcommand{\@subtitle}{#1}}
+\newcommand{\@repositoryurl}{}
+\newcommand{\repositoryurl}[1]{\renewcommand{\@repositoryurl}{#1}}
+\newcommand{\@extrainfo}{}
+\newcommand{\extrainfo}[1]{\renewcommand{\@extrainfo}{#1}}
+\newcommand{\@website}{}
+\newcommand{\website}[1]{\renewcommand{\@website}{#1}}
+\newcommand{\@version}{}
+\newcommand{\version}[1]{\renewcommand{\@version}{#1}}
+
+\newcommand{\@coverimage}{cover.jpg}
+\newcommand{\@coverillustration}{cover_illustration.png}
+\newcommand{\@unifeisymbol}{Logos/simbolo_PANTONE}
+\newcommand{\@robsicsymbol}{Logos/logo_RobSIC}
+\newcommand{\@unifeihorizcompl}{Logos/assin_hor_compl_PANTONE_pos}
+\newcommand{\@robsichorizcompl}{Logos/logo_RobSIC_full_hor}
+\newcommand{\coverimage}[1]{\renewcommand{\@coverimage}{#1}}
+\newcommand{\coverillustration}[1]{\renewcommand{\@coverillustration}{#1}}
+\newcommand{\unifeisymbol}[1]{\renewcommand{\@unifeisymbol}{#1}}
+\newcommand{\robsicsymbol}[1]{\renewcommand{\@robsicsymbol}{#1}}
+\newcommand{\unifeihorizcompl}[1]{\renewcommand{\@unifeihorizcompl}{#1}}
+\newcommand{\robsichorizcompl}[1]{\renewcommand{\@robsichorizcompl}{#1}}
+
+% --- Traduções de elementos do documento ---
+% --- Para adicionar suporte a outros idiomas, adicione novos blocos de tradução aqui ---
+% Inglês, padrão
+\newcommand{\apostila@covername}{Cover}
+\newcommand{\apostila@titlepagename}{Title page}
+\newcommand{\apostila@infopagename}{Information page}
+\newcommand{\apostila@chapternotes}{In this chapter:}
+\newcommand{\apostila@sourcecodetext}{The source code for this handout can be found at:}
+\newcommand{\apostila@backcovername}{Back cover}
+\newcommand{\apostila@alertboxtitlename}{Important!}
+\newcommand{\apostila@chaptername}{Chapter}
+\newcommand{\apostila@sectionname}{Section}
+\newcommand{\apostila@subsectionname}{Subsection}
+\newcommand{\apostila@subsubsectionname}{Subsubsection}
+\newcommand{\apostila@figurename}{Figure}
+\newcommand{\apostila@tablename}{Table}
+\newcommand{\apostila@codename}{Code}
+\newcommand{\apostila@annexname}{Annex}
+\newcommand{\apostila@appendexname}{Appendex}
+% Português brasileiro
+\addto\captionsbrazilian{
+    \renewcommand{\apostila@covername}{Capa}
+    \renewcommand{\apostila@titlepagename}{Página de título}
+    \renewcommand{\apostila@infopagename}{Página de informações}
+    \renewcommand{\apostila@chapternotes}{Neste capítulo:}
+    \renewcommand{\apostila@sourcecodetext}{O código fonte desta apostila pode ser encontrado em:}
+    \renewcommand{\apostila@backcovername}{Contracapa}
+    \renewcommand{\apostila@alertboxtitlename}{Importante!}
+    \renewcommand{\apostila@chaptername}{Capítulo}
+    \renewcommand{\apostila@sectionname}{Seção}
+    \renewcommand{\apostila@subsectionname}{Subseção}
+    \renewcommand{\apostila@subsubsectionname}{Subsubseção}
+    \renewcommand{\apostila@figurename}{Figura}
+    \renewcommand{\apostila@tablename}{Tabela}
+    \renewcommand{\apostila@codename}{Código}
+    \renewcommand{\apostila@annexname}{Anexo}
+    \renewcommand{\apostila@appendexname}{Apêndice}
+}
+% Espanhol
+\addto\captionsspanish{
+    \renewcommand{\apostila@covername}{Portada}
+    \renewcommand{\apostila@titlepagename}{Página de título}
+    \renewcommand{\apostila@infopagename}{Página de información}
+    \renewcommand{\apostila@chapternotes}{En este capítulo:}
+    \renewcommand{\apostila@sourcecodetext}{El código fuente de este manual se puede encontrar en:}
+    \renewcommand{\apostila@backcovername}{Contraportada}
+    \renewcommand{\apostila@alertboxtitlename}{¡Importante!}
+    \renewcommand{\apostila@chaptername}{Chapter}
+    \renewcommand{\apostila@sectionname}{Section}
+    \renewcommand{\apostila@subsectionname}{Subsection}
+    \renewcommand{\apostila@subsubsectionname}{Subsubsection}
+    \renewcommand{\apostila@figurename}{Figure}
+    \renewcommand{\apostila@tablename}{Table}
+    \renewcommand{\apostila@codename}{Code}
+    \renewcommand{\apostila@annexname}{Annex}
+    \renewcommand{\apostila@appendexname}{Appendex}
+}
+% Francês
+\addto\captionsfrench{
+    \renewcommand{\apostila@covername}{Couverture}
+    \renewcommand{\apostila@titlepagename}{Page de titre}
+    \renewcommand{\apostila@infopagename}{Page d'information}
+    \renewcommand{\apostila@chapternotes}{Dans ce chapitre :}
+    \renewcommand{\apostila@sourcecodetext}{Le code source de ce manuel se trouve à :}
+    \renewcommand{\apostila@backcovername}{Contre-plat}
+    \renewcommand{\apostila@alertboxtitlename}{Important !}
+    \renewcommand{\apostila@chaptername}{Chapter}
+    \renewcommand{\apostila@sectionname}{Section}
+    \renewcommand{\apostila@subsectionname}{Subsection}
+    \renewcommand{\apostila@subsubsectionname}{Subsubsection}
+    \renewcommand{\apostila@figurename}{Figure}
+    \renewcommand{\apostila@tablename}{Table}
+    \renewcommand{\apostila@codename}{Code}
+    \renewcommand{\apostila@annexname}{Annex}
+    \renewcommand{\apostila@appendexname}{Appendex}
+}
+% Alemão
+\addto\captionsgerman{
+    \renewcommand{\apostila@covername}{Umschlag}
+    \renewcommand{\apostila@titlepagename}{Titelseite}
+    \renewcommand{\apostila@infopagename}{Informationsseite}
+    \renewcommand{\apostila@chapternotes}{In diesem Kapitel:}
+    \renewcommand{\apostila@sourcecodetext}{Der Quellcode dieses Handbuchs ist zu finden unter:}
+    \renewcommand{\apostila@backcovername}{Rückseite}
+    \renewcommand{\apostila@alertboxtitlename}{Wichtig!}
+    \renewcommand{\apostila@chaptername}{Chapter}
+    \renewcommand{\apostila@sectionname}{Section}
+    \renewcommand{\apostila@subsectionname}{Subsection}
+    \renewcommand{\apostila@subsubsectionname}{Subsubsection}
+    \renewcommand{\apostila@figurename}{Figure}
+    \renewcommand{\apostila@tablename}{Table}
+    \renewcommand{\apostila@codename}{Code}
+    \renewcommand{\apostila@annexname}{Annex}
+    \renewcommand{\apostila@appendexname}{Appendex}
+}
+% --- FIM DAS TRADUÇÕES ---
+
+% --- COMANDOS DE REFERÊNCIA PERSONALIZADOS ---
+% Referencias clicáveis: envolver todo o texto no hyperlink
+% Usamos \ref* para evitar links aninhados e \nameref* quando disponível.
+\newcommand{\refcap}[1]{\hyperref[#1]{\textcolor{primaryColor}{\textbf{\apostila@chaptername~\ref*{#1} - \nameref*{#1}}}}}
+\newcommand{\refsec}[1]{\hyperref[#1]{\textcolor{primaryColor}{\textbf{\apostila@sectionname~\ref*{#1} -
+\nameref*{#1}}}}}
+\newcommand{\refssc}[1]{\hyperref[#1]{\textcolor{primaryColor}{\textbf{\apostila@subsectionname~\ref*{#1} -
+\nameref*{#1}}}}}
+\newcommand{\refsss}[1]{\hyperref[#1]{\textcolor{primaryColor}{\textbf{\apostila@subsubsectionname~\ref*{#1} -
+\nameref*{#1}}}}}
+\newcommand{\reffig}[1]{\hyperref[#1]{\textcolor{primaryColor}{\textbf{\apostila@figurename~\ref*{#1}}}}}
+\newcommand{\reftab}[1]{\hyperref[#1]{\textcolor{primaryColor}{\textbf{\apostila@tablename~\ref*{#1}}}}}
+\newcommand{\refanx}[1]{\hyperref[#1]{\textcolor{primaryColor}{\textbf{\apostila@annexname~\ref*{#1}}}}}
+\newcommand{\refapn}[1]{\hyperref[#1]{\textcolor{primaryColor}{\textbf{\apostila@appendexname~\ref*{#1}}}}}
+
+\let\oldtextbf\textbf
+\renewcommand{\textbf}[1]{{\color{primaryColor}\oldtextbf{#1}}}
+
+% --- Configurações de legenda ABNT NBR 14724 ---
+% 1. Configura o TÍTULO (caption) para ficar ACIMA e CENTRALIZADO
+\captionsetup{%
+    position=top,
+    labelsep=endash,
+    justification=centering
+}
+% 2. Cria um comando para a palavra "Fonte" que muda com o idioma
+\newcommand{\apostila@figuresourcename}{Source} % Padrão em inglês
+\addto\captionsbrazilian{\renewcommand{\apostila@figuresourcename}{Fonte}}
+\addto\captionsenglish{\renewcommand{\apostila@figuresourcename}{Source}} % Tradução para inglês
+\addto\captionsspanish{\renewcommand{\apostila@figuresourcename}{Fuente}} % Tradução para espanhol
+\addto\captionsfrench{\renewcommand{\apostila@figuresourcename}{Source}}  % Tradução para francês
+\addto\captionsgerman{\renewcommand{\apostila@figuresourcename}{Quelle}} % Tradução para alemão
+
+% 3. Cria o comando \source para ficar ABAIXO e ALINHADO À ESQUERDA
+% Define um macro auxiliar `\apostila@captionfont` que será
+% inicializado em \AtBeginDocument para espelhar a fonte das captions.
+
+% --- Variáveis de suporte ---
+\providecommand{\apostila@captionfont}{\small}
+% --- 1. Cria a variável para armazenar a largura da imagem ---
+\newlength{\LastGraphicWidth}
+% --- 2. Redefine o \includegraphics para medir a imagem automaticamente ---
+\let\OldIncludegraphics\includegraphics
+\renewcommand{\includegraphics}[2][]{%
+    % Insere a imagem original
+    \OldIncludegraphics[#1]{#2}%
+    % Mede a largura da imagem recém inserida e salva em \LastGraphicWidth
+    \settowidth{\LastGraphicWidth}{\OldIncludegraphics[#1]{#2}}%
+}
+\newcommand{\source}[1]{%
+    \par\vspace{2pt}{\apostila@captionfont%
+        \IfStrEq{#1}{}{\def\textoFinal{Autoria própria.}}{\def\textoFinal{#1\IfEndWith{#1}{.}{}{.}}}%
+        \ifdim\LastGraphicWidth=0pt \setlength{\LastGraphicWidth}{\linewidth} \fi%
+        \makebox[\linewidth][c]{\makebox[\LastGraphicWidth][l]{\textbf{Fonte:}~\textoFinal}}\par}
+    \setlength{\LastGraphicWidth}{0pt}%
+}
+% --- FIM DAS CONFIGURAÇÕES DE LEGENDA ---
+
+% --- Configuração do sumário ---
+\setlength{\cftbeforesecskip}{0pt} % no extra vertical space between section entries
+% --- Mostrar números de página no TOC e adicionar pontilhados ---
+\cftpagenumberson{chapter}
+\cftpagenumberson{section}
+\cftpagenumberson{subsection}
+\cftpagenumberson{subsubsection}
+% Pontilhados (leaders) entre título e número de página
+\renewcommand{\cftchapleader}{\cftdotfill{\cftdotsep}}
+\renewcommand{\cftsecleader}{\cftdotfill{\cftdotsep}}
+\renewcommand{\cftsubsecleader}{\cftdotfill{\cftdotsep}}
+\renewcommand{\cftsubsubsecleader}{\cftdotfill{\cftdotsep}}
+% (Opcional) largura da área dos números de página pode ser afinada se necessário.
+% --- Formatação dos títulos de capítulo no sumário ---
+\renewcommand{\cftchapfont}{\bfseries\color{primaryColor}}
+\renewcommand{\cftchappagefont}{\color{primaryColor}}
+% --- Formatação dos títulos de seção no sumário ---
+\renewcommand{\cftsecfont}{\color{primaryColor}} % normal (non-bold) font for section entries
+\renewcommand{\cftsecpagefont}{\color{primaryColor}}
+% --- Formatação dos títulos de subseção no sumário ---
+\renewcommand{\cftsubsecfont}{\color{primaryColor}} % normal (non-bold) font for section entries
+\renewcommand{\cftsubsecpagefont}{\color{primaryColor}}
+% --- Formatação dos títulos de subsubseção no sumário ---
+\renewcommand{\cftsubsubsecfont}{\color{primaryColor}} % normal (non-bold) font for section entries
+\renewcommand{\cftsubsubsecpagefont}{\color{primaryColor}}
+
+\renewcommand{\etocbkgcolorcmd}{\color{secondaryColor!20}}
+\renewcommand{\etocleftrulecolorcmd}{\color{secondaryColor!20}}
+\renewcommand{\etocrightrulecolorcmd}{\color{secondaryColor!20}}
+\renewcommand{\etocbottomrulecolorcmd}{\color{secondaryColor!20}}
+\renewcommand{\etoctoprulecolorcmd}{\color{secondaryColor!20}}
+\renewcommand{\etocbelowtocskip}{0pt\relax}
+
+\etocchecksemptiness
+
+% --- Formatação das legendas: usa a família OPOSTA em relação à família principal ---
+% Mover para \AtBeginDocument para evitar problemas de expansão durante o carregamento.
+% Simplified captions setup to avoid preamble expansion issues.
+% Temporarily force a small caption font; the opposite-family logic
+% can be restored once the root cause of the stack overflow is found.
+\AtBeginDocument{%
+    % Restaurar a lógica de usar a família OPOSTA nas legendas de forma segura
+    % Usar os nomes de fonte reconhecidos pelo pacote `caption` (rm / sf)
+    \if@apostila@roman
+        \captionsetup{font={small,sf}}%
+        % Definir macro usada por \source para seguir a mesma fonte das captions
+        \gdef\apostila@captionfont{\small\sffamily}%
+    \else
+        \captionsetup{font={small,rm}}%
+        % Definir macro usada por \source para seguir a mesma fonte das captions
+        \gdef\apostila@captionfont{\small\rmfamily}%
+    \fi
+}
+
+% Define um novo tcolorbox para o sumário
+\newtcolorbox{sumariobox}[1][]{%
+    enhanced,
+    breakable,
+    colback=secondaryColor!20,
+    colframe=white,
+    sharp corners,
+    fonttitle=\bfseries,
+    coltitle=primaryColor,      % <-- Cor da fonte alterada para primaryColor
+    colbacktitle=white,      % <-- Cor de fundo do título definida como branco
+    % ====================================================================
+    #1
+}
+
+% --- Novo ambiente: alertbox ---
+% Uso: \begin{alertbox}[<tcolor options>]{<Título opcional>} ... \end{alertbox}
+% Se o título não for fornecido (ou se {} for usado), usa \apostila@alertboxtitlename.
+% IMPORTANTE: O título opcional usa chaves {}. As opções do tcolorbox vão entre colchetes [].
+% Exemplo com título padrão: \begin{alertbox} ... \end{alertbox}
+% Exemplo com título customizado: \begin{alertbox}{Cuidado!} ... \end{alertbox}
+\NewDocumentEnvironment{alertbox}{ O{} g }
+{%
+    % #1 = opções do tcolorbox (opcional, entre colchetes)
+    % #2 = título opcional (entre chaves). Se ausente, será \apostila@alertboxtitlename
+    \begin{tcolorbox}[enhanced,breakable,
+            colback=accentColor!20,
+            colframe=accentColor!55,
+            arc=3pt,boxrule=0.8pt,
+            left=6pt,right=6pt,top=6pt,bottom=6pt,
+            fonttitle=\bfseries,
+            before skip=6pt,after skip=6pt,
+            title={% título com ícone
+                    \begin{tikzpicture}[baseline=(t.base)]
+                        \node[inner sep=0pt, text=black] (icon) {\alerticon};
+                        \node[anchor=west, text=black] (t) at ($(icon.east)+(4pt,0)$)
+                        {\IfNoValueTF{#2}{\apostila@alertboxtitlename}{#2}};
+                    \end{tikzpicture}
+                },
+            #1]
+        }
+        {\end{tcolorbox}}
+
+\newtcolorbox{infobox}[1][]{%
+    enhanced,
+    breakable,                % Permite que a caixa quebre entre páginas
+    colback=secondaryAccentColor!20,  % Cor de fundo definida como secondaryColor
+    colframe=secondaryAccentColor!20, % Cor da borda igual ao fundo
+    sharp corners,            % Define as bordas como retas (90 graus)
+    % A opção 'title' foi removida para não ter título.
+    #1
+}
+
+\newtcolorbox{remarkbox}[1][]{%
+    enhanced,
+    breakable,
+    colback=primaryColor!20,
+    colframe=primaryColor!20,
+    sharp corners,
+    % A opção 'title' foi removida para não ter título.
+    #1
+}
+
+% Define o estilo do sumário para usar o novo tcolorbox
+\etocsettocstyle{%
+    \etocfontminusone{\Huge\contentsname}\normalfont\normalsize
+    \begin{sumariobox}}{\end{sumariobox}}
+
+
+\newcommand*\chaptertoc{%
+    \begingroup
+    \normalfont
+    % Removemos as configurações de cor daqui, pois a 'sumariobox' já as controla.
+
+    % A lógica agora está toda dentro do \etocsettocstyle
+    \etocsettocstyle
+    {% --- CÓDIGO-ANTES ---
+        % Este bloco é executado QUANDO o \localtoc começa.
+        % 1. Verifica se o sumário local do capítulo está vazio.
+        \etocchecksemptiness
+        % 2. Se NÃO estiver vazio, abre a caixa colorida e imprime o título.
+        \etocifwasempty
+        {} % Se estiver vazio, não faz nada.
+        {% Se NÃO estiver vazio:
+            \begin{sumariobox}[title=\apostila@chapternotes]
+                }%
+                }
+                {% --- CÓDIGO-DEPOIS ---
+                % Este bloco é executado QUANDO o \localtoc termina.
+                % 1. Verifica novamente (o estado não mudou).
+                \etocifwasempty
+                {} % Se estava vazio, não faz nada.
+                {\end{sumariobox}}% Se NÃO estava vazio, fecha a caixa.
+    }
+
+    % Agora, este comando simplesmente executa o estilo que acabamos de definir.
+    \localtableofcontentswithrelativedepth{+2}
+    \endgroup
+}%
+
+% --- Capa, página de título e página de informações ---
+\renewcommand{\maketitle}{%
+    \thispagestyle{empty}
+    \pdfbookmark[0]{\apostila@covername}{capa}
+    \begin{tikzpicture}[overlay, remember picture, ampersand replacement=\&]
+        \node[inner sep=0] at (current page.center) {\includegraphics[width=\paperwidth,height=\paperheight]{\@coverimage}};
+        \node[color=secondaryColor] (institute) at ($(current page.north) + (0,-1.5cm)$)
+        {\begin{varwidth}{\paperwidth}\centering\linespread{1.0}\Large\@institute\end{varwidth}};
+        \node[anchor=center] (illustration) at ($(current page.center)+(0,3.5cm)$)
+        {\includegraphics[width=0.8\paperwidth]{\@coverillustration}};
+        \node[
+            anchor=north,
+            font=\fontsize{30}{28}\bfseries\titulocapitulo\selectfont,
+            text=primaryColor,
+            text width=0.9\paperwidth,
+            align=center,
+        ] (title) at ($(illustration.south)+(0,-.5cm)$) {\@title};
+        \node[text=primaryColor, below=.25cm of title, font=\fontsize{25}{30}\selectfont] (subtitle)  {\@subtitle};
+        \node[text=primaryColor, below=.25cm of subtitle] (author)  {\Large \@author};
+        \node [matrix of nodes, nodes={inner sep=5pt}] (my matrix) at ($(current page.south)+(0,2cm)$)
+        {
+            \includegraphics[width=3cm]{\@robsicsymbol} \& \includegraphics[width=2cm]{\@unifeisymbol} \\
+        };
+    \end{tikzpicture}
+    \clearpage\thispagestyle{empty}
+    % --- Página de título ---
+    \begin{titlepage}\thispagestyle{empty}
+        \pdfbookmark[0]{\apostila@titlepagename}{titulo}
+        \begin{flushright}
+            \rule{\linewidth}{0.4mm}\\[3pt]
+            % Uso de minipage + \raggedleft e \sloppy para permitir quebras
+            % de linha mais flexíveis e reduzir Underfull \hbox em títulos longos.
+            \tikz \node[text width=\textwidth-1cm, align=right, inner xsep=.5cm]
+            {\begin{minipage}{\textwidth-1cm}\raggedleft\sloppy
+                    {\fontsize{28}{34}\scshape\selectfont\@title}\par\vspace{10pt}
+                    {\fontsize{22}{30}\selectfont\@subtitle}\par\vspace{10pt}
+                    {\fontsize{18}{26}\selectfont\@author}\par
+                \end{minipage}};
+            \vspace{3cm}
+            \rule{\linewidth}{0.4mm}\\[3pt]
+        \end{flushright}
+        \vfill
+        \begin{center}\includegraphics[width=8cm]{\@robsichorizcompl}\end{center}
+        \begin{center}\includegraphics[width=8cm]{\@unifeihorizcompl}\end{center}
+    \end{titlepage}
+    % --- Página de informações ---
+    \clearpage\thispagestyle{empty}\vspace*{-1cm}
+    \pdfbookmark[0]{\apostila@infopagename}{info}
+    {\bfseries\LARGE\@title}\par\vspace{1cm}
+    Versão: \@version\par\vspace{1cm}
+    Data da compilação: \today\par\vspace{1cm}
+    Copyright \textcopyright~\the\year~dos autores. Todos os direitos reservados.\par\vspace{1.5cm}
+    \tikz \node[fill=primaryColor!20, text width=0.9\textwidth, inner sep=10pt, align=left]
+    {\apostila@sourcecodetext\par\url{\@repositoryurl}\par\vspace{1em}\@extrainfo};
+    \vfill
+    \begin{tikzpicture}[overlay, remember picture]
+        \node[anchor=south, fill=black!20, text width=\textwidth, align=left, inner ysep=10pt, inner xsep=10pt] at ($(current page.south) + (0, 3cm)$) {\doclicenseThis};
+    \end{tikzpicture}
+    \clearpage
+}%
+% --- FIM DA DEFINIÇÃO DE CAPA, PÁGINA DE TÍTULO E PÁGINA DE INFORMAÇÕES ---
+
+% --- Comando para desenhar a contracapa ---
+\newcommand{\maketitleback}{%
+    % Verifica se o modo twoside está ativo.
+    \if@twoside
+        % Se sim, garante que a próxima página seja par.
+        % Se a página atual for ímpar, insere uma página em branco.
+        \clearpage
+        \ifodd\c@page
+            \hbox{}\thispagestyle{empty}\newpage
+        \fi
+    \else
+        % Se não, apenas começa uma nova página normalmente.
+        \clearpage
+    \fi
+    % Desenha a contracapa
+    \thispagestyle{empty}%
+    \pdfbookmark[0]{\apostila@backcovername}{contracapa}%
+    \begin{tikzpicture}[overlay, remember picture]
+        \fill[secondaryColor] (current page.south west) rectangle ($(current page.south east) + (0, 4cm)$);
+        \fill[primaryColor] (current page.north west) rectangle ($(current page.north east) + (0, -4cm)$);
+        \node[matrix of nodes, nodes={inner sep=5pt}] (matrix) at (current page.center)
+        {
+            \includegraphics[width=10cm]{\@unifeihorizcompl} \\
+            \includegraphics[width=10cm]{\@robsichorizcompl} \\
+        };
+        \node[text width=\paperwidth, align=center, text=primaryColor] at ($(current page.south) + (0, 2cm)$) {
+            \Large\@institute \\
+            \normalsize\url{\@website}
+        };
+    \end{tikzpicture}%
+    \clearpage%
+}
+
+\newcommand{\apostila@drawheader}{%
+    \begin{tikzpicture}[overlay, remember picture]
+        \fill[primaryColor] (current page.north west) rectangle ($(current page.north east)+(0,-3.25cm)$);
+        \node[anchor=north west, text=primaryColor!30, font=\Large\scshape, minimum height=3.5cm, inner xsep=1cm] at (current page.north west) {\leftmark};
+        \node[anchor=north east, minimum height=2cm, inner xsep=1cm] at ($(current page.north east)+(.25cm,-.5cm)$) {\includegraphics[height=2cm]{\@unifeisymbol}};
+
+        \fill[secondaryColor] (current page.south west) rectangle ($(current page.south east) + (0,5cm)$);
+    \end{tikzpicture}
+}
+
+%% --- CABEÇALHOS GRÁFICOS COM TEXTO PARA PÁGINAS PARES E ÍMPARES ---
+
+% Comando para o cabeçalho das páginas PARES (mostra o CAPÍTULO)
+\newcommand{\apostila@drawheadereven}{%
+    \begin{tikzpicture}[overlay, remember picture]
+        % Barra verde
+        \fill[primaryColor] (current page.north west) rectangle ($(current page.north east)+(0,-3.25cm)$);
+
+        % Logo no canto externo (esquerda)
+        \node[anchor=north west, minimum height=2cm, inner xsep=1cm] at ($(current page.north west)+(-.25cm,-.5cm)$) {\includegraphics[height=2cm]{\@unifeisymbol}};
+
+        % Texto (título do capítulo) no canto interno (direita)
+        \if@inappendix
+            % Se estiver no anexo, não faz nada (ou desenha outra coisa se quiser)
+        \else
+            \node[
+                anchor=north east,
+                text=primaryColor!30,
+                font=\large\sffamily\bfseries,
+                minimum height=3.5cm,
+                inner xsep=1cm,
+                text width=0.6\textwidth,
+                align=right
+            ] at (current page.north east) {\nouppercase{\leftmark}};
+        \fi
+
+        % Barra amarela no rodapé
+        \fill[secondaryColor] (current page.south west) rectangle ($(current page.south east) + (0,1cm)$);
+    \end{tikzpicture}%
+}
+
+% Comando para o cabeçalho das páginas ÍMPARES (mostra a SEÇÃO)
+\newcommand{\apostila@drawheaderodd}{%
+    \begin{tikzpicture}[overlay, remember picture]
+        % Barra verde
+        \fill[primaryColor] (current page.north west) rectangle ($(current page.north east)+(0,-3.25cm)$);
+
+        % Logo no canto externo (direita)
+        \node[anchor=north east, minimum height=2cm, inner xsep=1cm]
+        at ($(current page.north east)+(.25cm,-.5cm)$) {\includegraphics[height=2cm]{\@unifeisymbol}};
+
+        \coordinate (capnum) at ($(current page.north west)+(2cm, -0.75cm)$);
+        \if@inappendix
+            % Se estiver no anexo, não faz nada (ou desenha outra coisa se quiser)
+        \else
+        % Texto (título da seção) no canto interno (esquerda)
+        \node[
+            anchor=north west,
+            text=primaryColor!30,
+            font=\large\sffamily\bfseries,
+            minimum height=3.5cm,
+            inner xsep=1cm,
+            text width=0.75\textwidth,
+            align=left
+            ] at ($(capnum) + (0, .75cm)$) {\nouppercase{\rightmark}};
+            \ifthenelse{\equal{\rightmark}{}}
+            {% Do nothing, or output alternative content if rightmark is empty
+            }
+            {%
+            \node[
+                anchor=north east,
+                text=primaryColor!30,
+                font=\bfseries\chaptertitlenamefont,
+            ] at (capnum) {\thechapter};
+            }
+        \fi
+        % Barra amarela no rodapé
+        \fill[secondaryColor] (current page.south west) rectangle ($(current page.south east) + (0,1cm)$);
+    \end{tikzpicture}%
+}
+
+%% --- NOVA LÓGICA DE RODAPÉ ---
+% 1. O pacote 'background' desenha a barra amarela no fundo de CADA página.
+\backgroundsetup{
+    angle=0,
+    opacity=1,
+    scale=1,
+    contents={%
+            \begin{tikzpicture}[remember picture, overlay]
+                \fill[secondaryColor] (current page.south west) rectangle ($(current page.south east) + (0,1cm)$);
+            \end{tikzpicture}%
+        }
+}
+
+% 2. O fancyhdr é agora muito mais simples, contendo APENAS TEXTO.
+\pagestyle{fancy}
+\addtolength{\footskip}{0.6cm}
+\fancyhf{}
+\renewcommand{\headrulewidth}{0pt}
+
+\if@twoside
+    % Layout para frente e verso (número da página no canto externo, info no interno)
+    \fancyhead[CE]{\apostila@drawheadereven} % Chama o header de pág. par no centro
+    \fancyhead[CO]{\apostila@drawheaderodd}  % Chama o header de pág. ímpar no centro
+    \fancyfoot[LE]{\color{primaryColor}\sffamily\thepage}
+    \fancyfoot[RO]{\color{primaryColor}\sffamily\thepage}
+\else
+    % Layout para um lado só
+    \fancyhead[C]{\apostila@drawheaderodd}
+    \fancyfoot[R]{\color{primaryColor}\sffamily\thepage}
+\fi
+
+\renewcommand{\chaptermark}[1]{\markboth{#1}{}}
+\renewcommand{\sectionmark}[1]{\markright{#1}}
+
+%% --- Formatação de Capítulos (titlesec) ---
+\renewcommand{\@makechapterhead}[1]{%
+    % Aplica o estilo de página customizado (do fancyhdr)
+    \thispagestyle{fancy}%
+
+    % Desenha o número do capítulo no canto da página com TikZ
+    \begin{tikzpicture}[overlay, remember picture]
+        \node[
+            anchor=north east,
+            text=primaryColor!30,
+            font=\chapternumberfont
+        ] (number) at ($(current page.north east)+(-3cm, -1.9cm)$) {\thechapter};
+        \node[
+            anchor=north east,
+            text=primaryColor!30,
+            font=\bfseries\chaptertitlenamefont
+        ] (name) at ($(number.north west)+(0, -.15cm)$) {\chaptertitlename};
+    \end{tikzpicture}%
+
+    % Bloco para o título
+    \vspace*{20pt}% Espaço inicial (ajuste se necessário, era 50pt no padrão book)
+    {\parindent \z@ \raggedright \normalfont
+        % Define a fonte e o estilo do título
+        \LARGE\color{primaryColor}\titulocapitulo
+        % Imprime o título completo, com guillemots
+        \guillemotleft #1\guillemotright
+        % Quebra de parágrafo
+        \par
+    }%
+
+    % Espaço vertical após o título
+    \vspace*{20pt}%
+    % Imprime o sumário local do capítulo
+    {\normalfont\color{primaryColor}\small\chaptertoc}%
+    \vspace*{20pt}%
+}
+
+\titlespacing*{\chapter}{0pt}{0pt}{20pt}
+
+\let\mainmatterorig\mainmatter
+\renewcommand\mainmatter{%
+    \edef\temppagenumber{\arabic{page}}%
+    \mainmatterorig
+    \setcounter{page}{\temppagenumber}%
+}
+
+% Correção para os cabeçalhos após capítulos
+\newif\if@inappendix
+\@inappendixfalse
+
+% Salva o comando original
+\let\origappendix\appendix
+
+% Redefine para chamar o original E mudar a nossa bandeira para verdadeiro
+\renewcommand{\appendix}{%
+  \origappendix%
+  \global\@inappendixtrue%
+  \renewcommand{\leftmark}{}
+  \renewcommand{\rightmark}{}
+}
+
+\endinput
+% --- Fim do arquivo apostila.sty ---

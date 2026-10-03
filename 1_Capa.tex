@@ -1,0 +1,100 @@
+%! TEX root = 0_relatorio_vipee.tex
+% Capa, folha de rosto e página de informações, com os dados do projeto.
+% Não usa \maketitle: o do apostila.sty traz licença CC e repositório do
+% código-fonte, próprios de apostila.
+% Logo do projeto na capa: \logoprojeto, definido no arquivo principal.
+
+%----------------------------
+%   Capa
+%----------------------------
+\thispagestyle{empty}
+\pdfbookmark[0]{Capa}{capa}
+\begin{tikzpicture}[overlay, remember picture, ampersand replacement=\&]
+    \node[inner sep=0] at (current page.center) {\includegraphics[width=\paperwidth,height=\paperheight]{cover.jpg}};
+    \node[color=secondaryColor, align=center, font=\Large] at ($(current page.north) + (0,-2cm)$)
+    {Universidade Federal de Itajubá\\ Universidade Federal de Lavras\\ Universidade Estadual de Campinas};
+    \coordinate (illustration) at ($(current page.center)+(0,1cm)$);
+    \node[anchor=south] at (illustration) {\includegraphics[width=7cm]{\logoprojeto}};
+    \node[
+        anchor=north,
+        font=\fontsize{40}{44}\bfseries\titulocapitulo\selectfont,
+        text=primaryColor,
+        text width=0.9\paperwidth,
+        align=center,
+    ] (title) at ($(illustration)+(0,-.5cm)$) {VIPEE-Mine AI};
+    \node[text=primaryColor, below=.25cm of title, font=\fontsize{25}{30}\selectfont] (subtitle) {Relatório Técnico};
+    \node[text=primaryColor, below=.5cm of subtitle, align=center, font=\large]
+    {Stellantis Automóveis Brasil Ltda.\ \textbullet\ Vale S.A.\\
+     Pagano Software Solutions\ \textbullet\ Tricod Equipamentos Eletrônicos Indústria e Comércio Ltda.};
+\end{tikzpicture}
+\clearpage
+
+%----------------------------
+%   Folha de rosto
+%----------------------------
+\begin{titlepage}\thispagestyle{empty}
+    \pdfbookmark[0]{Folha de rosto}{titulo}
+    \centering\rmfamily\setstretch{1.0}
+    \vspace*{0.5cm}
+    {\fontsize{26}{32}\bfseries\selectfont VIPEE-Mine AI\par}
+    \vspace{0.3cm}
+    {\Large Relatório Técnico\par}
+    \vspace{0.4cm}
+    \rule{\textwidth}{0.4pt}\par
+    \vspace{0.2cm}
+    \vspace{0.3cm}
+    Relatório técnico elaborado sob a coordenação de:\par\vspace{0.4cm}
+    {\bfseries Coordenador Geral:}\par\vspace{2pt}
+    \textit{Giovani Bernardes Vitor}\\
+    Professor Doutor\\
+    Universidade Federal de Itajubá -- UNIFEI\par\vspace{0.5cm}
+    {\bfseries Coordenadores Institucionais:}\par\vspace{2pt}
+    \begin{tabular}{ccc}
+        \textit{Giovani Bernardes Vitor} & \textit{Danton Diego Ferreira} & \textit{Janito Vaqueiro Ferreira} \\
+        Professor Doutor & Professor Doutor & Professor Doutor \\
+        UNIFEI & UFLA & UNICAMP \\
+    \end{tabular}\par\vspace{0.5cm}
+    {\bfseries Empresas Parceiras:}\par\vspace{2pt}
+    Stellantis Automóveis Brasil Ltda.\\
+    Vale S.A.\\
+    Pagano Software Solutions\\
+    Tricod Equipamentos Eletrônicos Indústria e Comércio Ltda.\par
+    \vspace{0.3cm}
+    \rule{\textwidth}{0.4pt}\par
+    \vspace{0.5cm}
+    {\large Universidade Federal de Itajubá\par\vspace{0.3cm}
+    Laboratório de Robótica, Sistemas Inteligentes e Complexos -- RobSIC\par\vspace{0.3cm}
+    Itabira, \today\par}
+    \vfill
+    % Logos: IESs em cima, empresas embaixo. Só entram os que existem em Logos/
+    \logoparceiro*[1.38cm]{Logos/assin_hor_compl_PANTONE_pos}{UNIFEI}%
+    \logoparceiro*[1.38cm]{Logos/ufla}{UFLA}%
+    \logoparceiro*[1.38cm]{Logos/unicamp}{UNICAMP}%
+    \logoparceiro*[1.38cm]{Logos/logo_RobSIC_full_hor}{RobSIC}\par\vspace{0.5cm}
+    \logoparceiro*[1.38cm]{Logos/stellantis}{Stellantis}%
+    \logoparceiro*[1.38cm]{Logos/vale}{Vale}%
+    \logoparceiro*[1.38cm]{Logos/pagano}{Pagano}%
+    \logoparceiro*[1.38cm]{Logos/tricod}{Tricod}\par
+    \vspace*{0.5cm}
+\end{titlepage}
+
+%----------------------------
+%   Página de informações
+%----------------------------
+\clearpage\thispagestyle{empty}\vspace*{-1cm}
+\pdfbookmark[0]{Página de informações}{info}
+{\bfseries\LARGE VIPEE-Mine AI -- Relatório Técnico}\par\vspace{1cm}
+Data da compilação: \today\par\vspace{1cm}
+\tikz \node[fill=primaryColor!20, text width=0.9\textwidth, inner sep=10pt, align=left]
+{%
+    \textbf{Instituições}\\
+    Universidade Federal de Itajubá (UNIFEI)\\
+    Universidade Federal de Lavras (UFLA)\\
+    Universidade Estadual de Campinas (UNICAMP)\\[1em]
+    \textbf{Empresas}\\
+    Stellantis Automóveis Brasil Ltda.\\
+    Vale S.A.\\
+    Pagano Software Solutions\\
+    Tricod Equipamentos Eletrônicos Indústria e Comércio Ltda.%
+};
+\clearpage

@@ -1,0 +1,28 @@
+%! TEX root = 0_relatorio_vipee.tex
+% Contracapa com os logos de todos os parceiros, no estilo do \maketitleback
+% do apostila.sty. \logoparceiro está definido no arquivo principal.
+
+\clearpage
+\thispagestyle{empty}
+\pdfbookmark[0]{Contracapa}{contracapa}
+\begin{tikzpicture}[overlay, remember picture]
+    \fill[secondaryColor] (current page.south west) rectangle ($(current page.south east) + (0, 4cm)$);
+    \fill[primaryColor] (current page.north west) rectangle ($(current page.north east) + (0, -4cm)$);
+    \node[align=center, text=primaryColor] at ($(current page.center) + (0, 1cm)$) {%
+        {\large\textbf{Instituições}}\\[0.5cm]
+        \logoparceiro{Logos/assin_hor_compl_PANTONE_pos}{Universidade Federal de Itajubá}\hspace{0.3cm}%
+        \logoparceiro{Logos/ufla}{Universidade Federal de Lavras}\hspace{0.3cm}%
+        \logoparceiro{Logos/unicamp}{Universidade Estadual de Campinas}\\[1cm]
+        {\large\textbf{Empresas}}\\[0.5cm]
+        \logoparceiro{Logos/stellantis}{Stellantis Automóveis Brasil Ltda.}\hspace{0.3cm}%
+        \logoparceiro{Logos/vale}{Vale S.A.}\\[0.5cm]
+        \logoparceiro{Logos/pagano}{Pagano Software Solutions}\hspace{0.3cm}%
+        \logoparceiro{Logos/tricod}{Tricod Equipamentos Eletrônicos Indústria e Comércio Ltda.}\\[1cm]
+        \includegraphics[width=7cm]{Logos/logo_RobSIC_full_hor}
+    };
+    \node[text width=\paperwidth, align=center, text=primaryColor] at ($(current page.south) + (0, 2cm)$) {
+        \Large Laboratório de Robótica, Sistemas Inteligentes e Complexos \\
+        \normalsize\url{https://robsic.unifei.edu.br}
+    };
+\end{tikzpicture}
+\clearpage

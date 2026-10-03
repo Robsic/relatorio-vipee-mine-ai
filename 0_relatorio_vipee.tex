@@ -1,0 +1,146 @@
+\documentclass[a4paper,12pt,oneside]{book}
+
+%----------------------------------------
+% Modelo apostila (RobSIC/Unifei): fontes, cores, cabeçalhos, capítulos,
+% legendas, \source, caixas (alertbox, infobox, remarkbox) — ver apostila.sty
+%----------------------------------------
+\usepackage[table]{xcolor}
+\usepackage[brazilian]{apostila}
+\usepackage{tikz}
+\usetikzlibrary{arrows.meta, positioning, shapes, calc, bending}
+\usepackage{indentfirst}
+\usepackage{import}
+\usepackage{subcaption}
+\usepackage{microtype}
+
+%----------------------------------------
+% Citações e referências (ABNT)
+%----------------------------------------
+\usepackage[alf, bibjustif, abnt-etal-list=0, abnt-etal-text=emph]{abntex2cite}
+
+%----------------------------------------
+% Pacotes adicionais
+%----------------------------------------
+\usepackage{float}
+\usepackage[final]{pdfpages}
+\usepackage{array}
+\usepackage{multirow}
+\usepackage{rotating}
+\usepackage{enumitem}
+\usepackage{verbatim}
+\usepackage{todonotes}
+\usepackage{multicol}
+
+%----------------------------------------
+% Código fonte (listings)
+%----------------------------------------
+\definecolor{verde}{rgb}{0,0.5,0}
+\definecolor{backcolour}{rgb}{0.97,0.97,0.97}
+\usepackage{listings}
+\lstset{
+    language=Python,
+    captionpos=t,
+    basicstyle=\ttfamily\small,
+    keywordstyle=\color{blue},
+    stringstyle=\color{verde},
+    commentstyle=\color{red},
+    showspaces=false,
+    showstringspaces=false,
+    numbers=left,
+    numberstyle=\tiny,
+    breaklines=true,
+    backgroundcolor=\color{backcolour},
+    breakautoindent=true,
+    xleftmargin=0pt,
+    inputencoding=utf8,
+    literate={á}{{\'a}}1 {ã}{{\~a}}1 {â}{{\^a}}1 {à}{{\`a}}1
+                     {é}{{\'e}}1 {ê}{{\^e}}1 {è}{{\`e}}1
+                     {í}{{\'i}}1 {ì}{{\`i}}1
+                     {ó}{{\'o}}1 {õ}{{\~o}}1 {ô}{{\^o}}1 {ò}{{\`o}}1
+                     {ú}{{\'u}}1 {ù}{{\`u}}1
+                     {ç}{{\c{c}}}1 {Ç}{{\c{C}}}1
+}
+\renewcommand{\lstlistingname}{Código}
+\newcommand{\code}[1]{\lstinline{#1}}
+
+% Quadro de Produtos e Entregas é um longtable: legenda como "Quadro"
+\captionsetup[longtable]{name=Quadro}
+
+%----------------------------------------
+% Metadados
+%----------------------------------------
+\title{VIPEE-Mine AI}
+\subtitle{Relatório Técnico}
+\hypersetup{pdftitle={VIPEE-Mine AI -- Relatório Técnico}}
+
+% Logo do projeto, usado na capa e nos cabeçalhos dos capítulos (caminho sem extensão).
+\newcommand{\logoprojeto}{Logos/vipee_logo}
+\unifeisymbol{\logoprojeto}
+
+% Logo de parceiro, usado na folha de rosto e na contracapa.
+% \logoparceiro[<altura>]{<arquivo sem extensão>}{<nome do parceiro>}
+%   caixa de largura fixa (grade); sem o arquivo, sai o nome em texto.
+% \logoparceiro*[<altura>]{<arquivo>}{<nome>}
+%   largura natural (linha de logos); sem o arquivo, não sai nada.
+% Procura Logos/<nome>.pdf, .png, .jpg ou .eps.
+\makeatletter
+\newcommand{\logo@arquivo}[2]{% #1 = arquivo sem extensão, #2 = opções
+    \IfFileExists{#1.pdf}{\includegraphics[#2]{#1.pdf}}{%
+    \IfFileExists{#1.png}{\includegraphics[#2]{#1.png}}{%
+    \IfFileExists{#1.jpg}{\includegraphics[#2]{#1.jpg}}{%
+    \IfFileExists{#1.eps}{\includegraphics[#2]{#1.eps}}{\relax}}}}%
+}
+\newcommand{\logo@existe}[3]{% #1 = arquivo, #2 = se existe, #3 = se não
+    \IfFileExists{#1.pdf}{#2}{\IfFileExists{#1.png}{#2}{%
+    \IfFileExists{#1.jpg}{#2}{\IfFileExists{#1.eps}{#2}{#3}}}}%
+}
+\NewDocumentCommand{\logoparceiro}{s O{2cm} m m}{%
+    \IfBooleanTF{#1}{%
+        \logo@existe{#3}{\hspace{0.2cm}\logo@arquivo{#3}{height=#2,width=2.5\dimexpr#2\relax,keepaspectratio}\hspace{0.2cm}}{}%
+    }{%
+        \makebox[2.6\dimexpr#2\relax][c]{%
+            \logo@existe{#3}%
+                {\logo@arquivo{#3}{height=#2,width=2.5\dimexpr#2\relax,keepaspectratio}}%
+                {\parbox[c][#2][c]{2.5\dimexpr#2\relax}{\centering\bfseries\footnotesize #4}}%
+        }%
+    }%
+}
+\makeatother
+
+\renewcommand{\baselinestretch}{1.3}
+
+\overfullrule=1mm
+
+%----------------------------------------
+% Início do documento
+%----------------------------------------
+\begin{document}
+
+\frontmatter
+
+\import{}{1_Capa}
+
+\pagestyle{empty}
+\import{}{2_Resumo}
+
+\tableofcontents
+\clearpage
+
+\mainmatter
+\pagestyle{fancy}
+
+\import{}{3_Introducao}
+\import{}{4_Justificativa}
+\import{}{5_Objetivos}
+\import{}{6_Produtos_entregas}
+\import{}{7_Conclusao}
+\import{}{8_Referencias}
+
+% Anexos
+%\cleardoublepage
+%\appendix
+
+\backmatter
+\import{}{9_Contracapa}
+
+\end{document}
