@@ -38,6 +38,7 @@
 \definecolor{backcolour}{rgb}{0.97,0.97,0.97}
 \usepackage{listings}
 \lstset{
+    numberbychapter=false, % Código 1, 2, 3... (sem o número do capítulo)
     language=Python,
     captionpos=t,
     basicstyle=\ttfamily\small,
@@ -61,10 +62,28 @@
                      {ç}{{\c{c}}}1 {Ç}{{\c{C}}}1
 }
 \renewcommand{\lstlistingname}{Código}
+\renewcommand{\lstlistlistingname}{Lista de Códigos}
+% O \lstlistoflistings original passa pelo \tableofcontents, que o etoc do
+% apostila.sty sequestra (sairia o sumário). Monta a lista diretamente.
+\makeatletter
+\renewcommand{\lstlistoflistings}{\chapter*{\lstlistlistingname}\@starttoc{lol}}
+\makeatother
 \newcommand{\code}[1]{\lstinline{#1}}
 
-% Quadro de Produtos e Entregas é um longtable: legenda como "Quadro"
-\captionsetup[longtable]{name=Quadro}
+%----------------------------------------
+% Numeração de ilustrações (ABNT): contador próprio por tipo (Figura, Quadro,
+% Tabela, Código, equação), arábico e sequencial no documento inteiro, sem o
+% número do capítulo. Figuras já vêm assim do apostila.sty.
+%----------------------------------------
+\counterwithout{table}{chapter}
+\counterwithout{equation}{chapter}
+% Quadro: tipo próprio, com ambiente flutuante "quadro" e \listofquadros
+\DeclareCaptionType[within=none]{quadro}[Quadro][Lista de Quadros]
+% Quadro em longtable: use \begin{quadrolongo}...\end{quadrolongo}
+\newenvironment{quadrolongo}{\def\LTcaptype{quadro}\longtable}{\endlongtable}
+% Referências no mesmo estilo de \reffig e \reftab do apostila.sty
+\newcommand{\refqdr}[1]{\hyperref[#1]{\textcolor{primaryColor}{\textbf{Quadro~\ref*{#1}}}}}
+\newcommand{\refcod}[1]{\hyperref[#1]{\textcolor{primaryColor}{\textbf{Código~\ref*{#1}}}}}
 
 %----------------------------------------
 % Metadados

@@ -30,24 +30,113 @@ Código-fonte em LaTeX do relatório técnico do projeto **VIPEE-Mine AI**, dese
 3. Adicione uma linha no Quadro de Produtos e Entregas (`6_Produtos_entregas.tex`).
 4. Coloque as imagens em `Figuras/M<n>A<m>/` e cadastre as referências em `Referencias.bib`.
 
-### Convenções do modelo
-
-- **Níveis de título:** as atividades ficam dentro do capítulo Produtos e Entregas: cada atividade é uma `\section`, com `\subsection` (Objetivos, Metodologia, Resultados, Conclusão) dentro dela. Cada capítulo mostra automaticamente um sumário local ("Neste capítulo").
-- **Figuras e tabelas:** escreva `\caption` **antes** do conteúdo (legenda acima) e `\source{...}` depois (fonte abaixo; vazio gera "Autoria própria."):
-  ```latex
-  \begin{figure}[H]
-      \centering
-      \caption{Legenda da figura.}
-      \label{fig:M1A1_exemplo}
-      \includegraphics[width=0.7\linewidth]{Figuras/M1A1/exemplo.png}
-      \source{}
-  \end{figure}
-  ```
-  Referências cruzadas: `\reffig{...}`, `\reftab{...}`, `\refsec{...}`.
-- **Destaques:** ambientes `alertbox`, `infobox` e `remarkbox`.
-- **Citações:** `\citeonline{chave}` gera "Silva (2024)" e `\cite{chave}` gera "(SILVA, 2024)". A lista de referências só inclui as obras citadas.
-
 Há um exemplo comentado em `M1/M1A1.tex`.
+
+## 🧰 Comandos do modelo
+
+### Níveis de título
+
+As atividades ficam dentro do capítulo Produtos e Entregas: cada atividade é uma `\section`, com `\subsection` (Objetivos, Metodologia, Resultados, Conclusão) dentro dela. Cada capítulo mostra automaticamente um sumário local ("Neste capítulo"); não é preciso chamar nada.
+
+### Figuras e tabelas
+
+Escreva `\caption` **antes** do conteúdo (legenda acima, como pede a ABNT) e `\source{...}` **depois** (fonte abaixo):
+
+```latex
+\begin{figure}[H]
+    \centering
+    \caption{Arquitetura do sistema de visão surround.}
+    \label{fig:M1A1_arquitetura}
+    \includegraphics[width=0.7\linewidth]{Figuras/M1A1/arquitetura.png}
+    \source{Elaborado pelos autores}
+\end{figure}
+```
+
+- `\source{}` vazio gera "Fonte: Autoria própria."; o ponto final é acrescentado se faltar.
+- Em figuras, a linha "Fonte:" alinha com a borda esquerda da imagem; em tabelas e quadros, com a margem do texto.
+- **Tabela** (dados numéricos, bordas laterais abertas): `table`, de preferência com `\toprule`, `\midrule` e `\bottomrule`, do `booktabs`.
+- **Quadro** (texto, todas as bordas fechadas): `quadro`, no mesmo formato de `figure`/`table`. Para quadros que podem quebrar de página, use `quadrolongo`, com a mesma sintaxe do `longtable` (veja o Quadro de Produtos e Entregas em `6_Produtos_entregas.tex`).
+
+**Numeração (ABNT):** cada tipo tem numeração própria (Figura, Quadro, Tabela, Código e equações), arábica e sequencial no documento inteiro, sem o número do capítulo: Figura 1, Figura 2, Quadro 1, Tabela 1... É automático.
+
+As listas de cada tipo podem ser incluídas no arquivo principal, logo após o `\tableofcontents`: `\listoffigures`, `\listoftables`, `\listofquadros` e `\lstlistoflistings` (Lista de Códigos).
+
+### Referências cruzadas
+
+Geram o nome do elemento, o número e (para divisões do texto) o título, já com link e na cor do modelo. O rótulo vem logo depois do comando de título ou do `\caption`.
+
+| Comando | Gera | Use com |
+|---|---|---|
+| `\refcap{rotulo}` | Capítulo 4 - Produtos e entregas | `\chapter{...}\label{rotulo}` |
+| `\refsec{rotulo}` | Seção 4.1 - M1A1 | `\section{...}\label{rotulo}` |
+| `\refssc{rotulo}` | Subseção 4.1.1 - Objetivos | `\subsection{...}\label{rotulo}` |
+| `\refsss{rotulo}` | Subsubseção 4.1.1.1 - ... | `\subsubsection{...}\label{rotulo}` |
+| `\reffig{rotulo}` | Figura 1 | `figure` |
+| `\reftab{rotulo}` | Tabela 1 | `table` |
+| `\refqdr{rotulo}` | Quadro 1 | `quadro`, `quadrolongo` |
+| `\refcod{rotulo}` | Código 1 | `lstlisting` (`label={rotulo}`) |
+| `\refapn{rotulo}` / `\refanx{rotulo}` | Apêndice A / Anexo A | apêndices e anexos |
+
+Use prefixos com o código da atividade (`fig:M1A1_...`, `tab:M2A3_...`) para não haver rótulos repetidos entre colaboradores.
+
+### Caixas de destaque
+
+```latex
+\begin{alertbox}                  % título padrão: "Importante!"
+    Texto do alerta.
+\end{alertbox}
+
+\begin{alertbox}{Atenção!}        % título personalizado, entre chaves
+    Texto do alerta.
+\end{alertbox}
+
+\begin{infobox}                   % caixa azul-clara, sem título
+    Informação complementar.
+\end{infobox}
+
+\begin{remarkbox}                 % caixa azul-acinzentada, sem título
+    Observação.
+\end{remarkbox}
+```
+
+As três aceitam opções do `tcolorbox` entre colchetes, por exemplo `\begin{infobox}[colback=white]`.
+
+### Código-fonte
+
+```latex
+Trecho em linha: \code{rclpy.spin(node)}.
+
+\begin{lstlisting}[caption={Inicialização do nó ROS 2}, label={lst:M1A1_no}]
+def main():
+    rclpy.init()
+\end{lstlisting}
+
+\begin{lstlisting}[language=C++, caption={Exemplo em C++}]
+int main() { return 0; }
+\end{lstlisting}
+```
+
+A linguagem padrão é Python; troque com `language=` (qualquer linguagem do pacote `listings`). A legenda sai como "Código 1".
+
+### Citações (ABNT, `abntex2cite`)
+
+| Comando | Gera |
+|---|---|
+| `\cite{silva2024}` | (SILVA, 2024) |
+| `\citeonline{silva2024}` | Silva (2024) |
+| `\apud{silva2024}{souza2020}` | (SILVA, 2024 apud SOUZA, 2020) |
+
+Cadastre as obras em `Referencias.bib`. A lista de referências só inclui as obras citadas.
+
+### Pendências
+
+`\todo[inline]{Texto}` gera uma nota laranja no corpo do texto, útil durante a escrita. Use sempre com `[inline]`, porque a margem do modelo é estreita demais para notas laterais. Remova as notas antes da entrega.
+
+### Outros
+
+- `\textbf{...}` sai em negrito **e** na cor azul do modelo. Para negrito preto, use `{\bfseries ...}`.
+- `\neverindent` desliga o recuo de primeira linha dos parágrafos seguintes; `\autoindent` o restaura.
+- No arquivo principal: `\logoprojeto` define o logo da capa e dos cabeçalhos; `\logoparceiro` monta os logos da folha de rosto e da contracapa (ver comentários no preâmbulo).
 
 ## 🛠 Pré-requisitos
 
